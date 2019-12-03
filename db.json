@@ -1,0 +1,62 @@
+{
+  "tasks": [
+    {
+      "id": "hS0vWUz0",
+      "title": "Task Zero",
+      "description": "Task created from PostMan",
+      "completed": false,
+      "data": {
+        "completed": true
+      }
+    },
+    {
+      "id": "2YDeUNTI",
+      "title": "Task Zero 2",
+      "description": "Task created from PostMan 2",
+      "completed": false,
+      "data": {
+        "completed": true
+      }
+    },
+    {
+      "id": "RD0lHmNV",
+      "title": "Task Zero 3",
+      "description": "Task created from PostMan 3",
+      "completed": false
+    }
+  ],
+  "gallery": [
+    {
+      "id": "RrWQMcgd",
+      "path": "uploads/avatar-1575377884748.jpg"
+    },
+    {
+      "id": "4UGJndF8",
+      "path": "uploads/avatar-1575377887683.jpg"
+    },
+    {
+      "id": "NBRfwSRP",
+      "path": "uploads/avatar-1575377888930.jpg"
+    },
+    {
+      "id": "Us_pnOjg",
+      "path": "uploads/avatar-1575377890882.jpg"
+    },
+    {
+      "id": "Lwl1yZE4",
+      "path": "/uploads/avatar-1575379654503.jpg"
+    },
+    {
+      "id": "bMBENFyt",
+      "path": "/uploads/avatar-1575379673863.jpg"
+    },
+    {
+      "id": "SbPsxUWd",
+      "path": "/uploads/avatar-1575379683655.jpg"
+    },
+    {
+      "id": "eyKVmdj7",
+      "path": "/uploads/avatar-1575380645617.jpg"
+    }
+  ]
+}

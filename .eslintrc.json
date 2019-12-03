@@ -1,0 +1,20 @@
+{
+  "extends": ["airbnb-base"],
+  "rules": {
+    "comma-dangle": "off",
+    "indent": ["error", 4],
+    "semi": ["error", "always", { "omitLastInOneLineBlock": true}],
+    "no-unused-vars": ["error", { "args": "none" }],
+    "linebreak-style": "off",
+    "arrow-parens": "off",
+    "object-curly-newline": "off",
+    "no-mixed-operators": "off",
+    "arrow-body-style": "off",
+    "function-paren-newline": "off",
+    "no-plusplus": "off",
+    "space-before-function-paren": 0,
+    "space-in-parens": ["error", "never"],
+    "object-curly-spacing": ["error", "never"]
+
+  }
+}
