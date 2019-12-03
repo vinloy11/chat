@@ -1,5 +1,5 @@
-# Focus start - delway project
-- git clone https://github.com/vinloy11/cft-delway.git
-- cd cft-delway
+# Focus start - chat
+- git clone https://github.com/vinloy11/chat.git
+- cd chat
 - npm install
 - npm start
