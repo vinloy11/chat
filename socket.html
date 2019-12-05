@@ -50,7 +50,7 @@
             background: #eee;
         }
 
-        #stream {
+        #start-stream, #stop-stream {
             cursor: pointer;
             width: 200px;
             height: 100px;
@@ -59,11 +59,14 @@
             padding-top: 40px;
             text-align: center
         }
+        #start-stream.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-<a id="stream">Start stream</a>
-<video id="video" autoplay></video>
+<a id="start-stream">Start stream</a><a id="stop-stream">Start stream</a>
+<video id="video" style="display: none" autoplay></video>
 <img src="" alt="">
 <ul id="messages"></ul>
 <form id="form" action="">
@@ -75,52 +78,114 @@
 </template>
 <script src="http://localhost:3000/node_modules/socket.io-client/dist/socket.io.js"></script>
 <script>
-    let socket = io.connect('http://localhost:3000');
-    let form = document.querySelector('form');
-    let btnSubmit = document.querySelector('button');
-    let messages = document.getElementById('messages')
-    let m = document.getElementById('m');
-    let stream = document.getElementById('stream')
-    btnSubmit.addEventListener('click', submitForm);
-    form.addEventListener('submit', submitForm);
-    stream.addEventListener('click', startStream);
-    function submitForm(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log(m.value);
-        socket.emit('chat message', m.value);
-        m.value = '';
-        return false
+    let mainUser = 0;
+    let startStream = document.getElementById('start-stream');
+    let socket = io('http://localhost:3000');
+    socket.on('connect', connectUser);
+    startStream.addEventListener('click', function () {
+        socket.emit('start stream', 'disabled');
+    });
+    function connectUser() {
+        console.log('connect');
+        socket.on('start stream', function (obj) {
+            console.log(obj);
+            startStream.classList.add('hidden');
+        });
+        socket.on('check button', function (state) {
+            if (state === 'disabled') {
+                startStream.classList.add('hidden');
+            } else {
+                startStream.classList.remove('hidden');
+            }
+        })
+    }
+    document.addEventListener('DOMContentLoaded', checkButton);
+    function checkButton() {
+        socket.emit('check button')
     }
 
-    socket.addEventListener('chat message', addMessage);
+    // let form = document.querySelector('form');
+    // let btnSubmit = document.querySelector('button');
+    // let messages = document.getElementById('messages');
+    // let m = document.getElementById('m');
 
-    function addMessage(msg) {
-        let liTemplate = document.getElementById('liMessage');
-        let li = liTemplate.content.querySelector('li');
-        li.textContent = msg;
-        let clone = document.importNode(liTemplate.content, true)
-        messages.appendChild(clone)
-    }
+    // const img = document.querySelector('img');
+    // let mainUser = false;
+    // let stopStreamButton = document.getElementById('stop-stream');
+    // btnSubmit.addEventListener('click', submitForm);
+    // form.addEventListener('submit', submitForm);
+    // stream.addEventListener('click', startStream);
+    // function submitForm(e) {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+    //     console.log(m.value);
+    //     socket.emit('chat message', m.value);
+    //     m.value = '';
+    //     return false
+    // }
+    //
+    // socket.addEventListener('chat message', addMessage);
+    //
+    // function addMessage(msg) {
+    //     let liTemplate = document.getElementById('liMessage');
+    //     let li = liTemplate.content.querySelector('li');
+    //     li.textContent = msg;
+    //     let clone = document.importNode(liTemplate.content, true);
+    //     messages.appendChild(clone)
+    // }
+    //
+    // const video = document.querySelector('#video');
+    // stream.addEventListener('click', openStream);
+    // function openStream(e) {
+    //     socket.addEventListener('stream', startStream);
+    //     navigator.mediaDevices.getUserMedia({video: {width: 426, height: 240}}).then((stream) => video.srcObject = stream);
+    //     setInterval(() => {
+    //         socket.emit('stream', getFrame());
+    //     },  50);
+    // }
+    //
+    // socket.addEventListener('stream', startStream);
+    // stopStreamButton.addEventListener('click', stopStream);
+    // function stopStream() {
+    //     socket.emit('stop stream');
+    //     socket.addEventListener('stop stream', startStream);
+    // }
+    //
+    // const getFrame = () => {
+    //     const canvas = document.createElement('canvas');
+    //     canvas.width = video.videoWidth;
+    //     canvas.height = video.videoHeight;
+    //     canvas.getContext('2d').drawImage(video, 0, 0);
+    //     const data = canvas.toDataURL('video/mp4');
+    //     return data;
+    //
+    // };
+    //
+    //
+    // function startStream(stream3) {
+    //     if (stream3 === 'stop') {
+    //         alert('stop stream');
+    //         socket.removeEventListener('stream', startStream);
+    //         img.hidden = true;
+    //         stopStreamedVideo(video)
+    //     }else {
+    //         stream.hidden = true;
+    //         socket.removeEventListener('stop stream', startStream);
+    //         img.hidden = false;
+    //         img.src = stream3;
+    //     }
+    // }
+    // function stopStreamedVideo(videoElem) {
+    //     let stream2 = videoElem.srcObject;
+    //     let tracks = stream2.getTracks();
+    //
+    //     tracks.forEach(function(track) {
+    //         track.stop();
+    //     });
+    //
+    //     videoElem.srcObject = null;
+    // }
 
-    const video = document.querySelector('#video');
-    navigator.mediaDevices.getUserMedia({video: {width: 426, height: 240}}).then((stream) => video.srcObject = stream);
-    const getFrame = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        const data = canvas.toDataURL('image/png');
-        return data;
-    };
-    setInterval(() => {
-        socket.emit('stream', getFrame());
-    },  50);
-    socket.addEventListener('stream', startStream);
-    const img = document.querySelector('img');
-    function startStream(stream) {
-        img.src = stream;
-    }
 </script>
 </body>
 </html>

@@ -10,17 +10,38 @@ const io = require('socket.io')(http);
 app.get('/chat', function(req, res){
     res.sendFile(__dirname + '/socket.html');
 });
-let connectedClients = [];
+let button = '';
 io.on('connection', function(socket){
     console.log('a user connected');
-    connectedClients.push(socket);
-    socket.on('chat message', function(msg){
-        console.log(msg);
-        io.emit( 'chat message' , msg);
+    socket.broadcast.emit('user connected');
+    socket.on('start stream', function (msg) {
+        button = 'disabled';
+        let obj = {};
+        obj.msg = msg;
+        obj.button = button;
+        console.log(obj)
+        socket.broadcast.emit('start stream', obj)
     });
-    socket.on('stream', function (stream) {
-        io.emit('stream', stream)
+    socket.on('check button', function () {
+        if (button == 'disabled') {
+            socket.emit('check button', 'disabled')
+        }else {
+            socket.emit('check button', 'not disabled')
+        }
     });
+    socket.on('disconnect', function () { });
+
+    // socket.on('chat message', function(msg){
+    //     console.log(msg);
+    //     io.emit( 'chat message' , msg);
+    // });
+    //
+    // socket.on('stream', function (stream) {
+    //     io.emit('stream', stream)
+    // });
+    // socket.on('stop stream', function () {
+    //     io.emit('stream', 'stop')
+    // });
     socket.on('disconnect', function(){
         console.log('user disconnected from your channel');
     });
