@@ -7,46 +7,65 @@ const app = express();
 var http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
-app.get('/chat', function(req, res){
+app.get('/chat', function (req, res) {
     res.sendFile(__dirname + '/socket.html');
 });
 let button = '';
-io.on('connection', function(socket){
+let onlineUsers = 0;
+let mainUser = 0;
+io.on('connection', function (socket) {
+    onlineUsers++;
+    // console.log(onlineUsers)
     console.log('a user connected');
     socket.broadcast.emit('user connected');
-    socket.on('start stream', function (msg) {
-        button = 'disabled';
-        let obj = {};
-        obj.msg = msg;
-        obj.button = button;
-        console.log(obj)
-        socket.broadcast.emit('start stream', obj)
-    });
-    socket.on('check button', function () {
-        if (button == 'disabled') {
-            socket.emit('check button', 'disabled')
-        }else {
-            socket.emit('check button', 'not disabled')
-        }
-    });
-    socket.on('disconnect', function () { });
+    socket.on('close window', stopStream);
+    socket.on('start stream', startStream);
+    socket.on('stop stream', stopStream);
+    socket.on('disconnect', disconnect);
+    socket.on('check state', checkState);
+    socket.on('chat message', chat);
 
-    // socket.on('chat message', function(msg){
-    //     console.log(msg);
-    //     io.emit( 'chat message' , msg);
-    // });
-    //
-    // socket.on('stream', function (stream) {
-    //     io.emit('stream', stream)
-    // });
-    // socket.on('stop stream', function () {
-    //     io.emit('stream', 'stop')
-    // });
-    socket.on('disconnect', function(){
+    function checkState() {
+        if (button === 'disabled') {
+            socket.emit('check state', 'disabled')
+        } else {
+            socket.emit('check state', 'not disabled')
+        }
+    }
+
+    function startStream(video) {
+        button = 'disabled';
+        if (video !== 'data:,') {
+            socket.broadcast.emit('start stream', video)
+        } else {
+            return true;
+        }
+    }
+
+    function closeWindow(user) {
+        if (user === 1) {
+          socket.emit('stop stream')
+        }
+    }
+
+    function stopStream() {
+        button = '';
+        socket.broadcast.emit('stop stream')
+    }
+
+    function disconnect() {
+        onlineUsers--;
+        console.log(onlineUsers);
         console.log('user disconnected from your channel');
-    });
+    }
+
+    function chat(msg) {
+        console.log(msg);
+        io.emit( 'chat message' , msg);
+    }
 });
-http.listen(3000, function(){
+
+http.listen(3000, function () {
     console.log('listening on *:3000');
 });
 
