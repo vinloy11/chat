@@ -2,11 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
-
+const fs = require('fs')
 
 var http = require('http').createServer(app);
 const io = require('socket.io')(http);
-
 app.get('/chat', function (req, res) {
     res.sendFile(__dirname + '/socket.html');
 });
@@ -94,5 +93,12 @@ app.use((err, req, res, next) => {
     const {message} = err;
     res.json({status: 'ERROR', message});
 });
+var img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0"
+    + "NAAAAKElEQVQ4jWNgYGD4Twzu6FhFFGYYNXDUwGFpIAk2E4dHDRw1cDgaCAASFOffhEIO"
+    + "3gAAAABJRU5ErkJggg==";
+var data = img.replace(/^data:image\/\w+;base64,/, "");
+fs.writeFile('imag2e.png', data,{encoding:'base64'} , () => {});
+//https://stackoverflow.com/questions/43487543/writing-binary-data-using-node-js-fs-writefile-to-create-an-image-file
+
 
 app.listen(8080);

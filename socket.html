@@ -71,7 +71,7 @@
 </head>
 <body>
 <a id="start-stream">Start stream</a><a id="stop-stream">Stop stream</a>
-<a id="pay-stream">Pay stream</a>
+<a id="pay-stream">Pay stream</a><a id="screen-stream">Screen</a>
 
 <div class="video-wrapper">
     <video id="video" autoplay></video>
@@ -96,6 +96,7 @@
     let stopStreamButton = document.getElementById('stop-stream');
     let socket = io('http://localhost:3000');
     let intervalID ;
+    let screenStream = document.getElementById('screen-stream');
     checkState();
     socket.on('connect', connectUser);
     startStreamButton.addEventListener('click', startStream);
@@ -160,35 +161,25 @@
         startStreamButton.classList.remove('hidden')
     }
 
-
     function sendStream() {
         intervalID = setInterval(() => {
             socket.emit('start stream', getFrame());
         }, 50);
     }
 
-
     function clearSendStream() {
         clearInterval(intervalID);
     }
 
-    // checkDisconnected();
-    // function checkDisconnected() {
-    //     socket.on('close', mainUser);
-    // }
+
 
     let form = document.querySelector('form');
     let btnSubmit = document.querySelector('button');
     let messages = document.getElementById('messages');
     let m = document.getElementById('m');
-
-    //
-    // let mainUser = false;
-    // let stopStreamButton = document.getElementById('stop-stream');
     btnSubmit.addEventListener('click', submitForm);
     form.addEventListener('submit', submitForm);
 
-    // stream.addEventListener('click', startStream);
     function submitForm(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -208,40 +199,6 @@
         messages.appendChild(clone)
     }
 
-    //
-    // const video = document.querySelector('#video');
-    // stream.addEventListener('click', openStream);
-    // function openStream(e) {
-    //     socket.addEventListener('stream', startStream);
-    //     navigator.mediaDevices.getUserMedia({video: {width: 426, height: 240}}).then((stream) => video.srcObject = stream);
-    //     setInterval(() => {
-    //         socket.emit('stream', getFrame());
-    //     },  50);
-    // }
-    //
-    // socket.addEventListener('stream', startStream);
-    // stopStreamButton.addEventListener('click', stopStream);
-    // function stopStream() {
-    //     socket.emit('stop stream');
-    //     socket.addEventListener('stop stream', startStream);
-    // }
-    //
-
-    //
-    //
-    // function startStream(stream3) {
-    //     if (stream3 === 'stop') {
-    //         alert('stop stream');
-    //         socket.removeEventListener('stream', startStream);
-    //         img.hidden = true;
-    //         stopStreamedVideo(video)
-    //     }else {
-    //         stream.hidden = true;
-    //         socket.removeEventListener('stop stream', startStream);
-    //         img.hidden = false;
-    //         img.src = stream3;
-    //     }
-    // }
     let getFrame = () => {
         let canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
@@ -253,14 +210,17 @@
 
     function stopStreamedVideo(videoElem) {
         let video = videoElem.srcObject;
-        let tracks = video.getTracks();
-
+        if (video) {
+            let tracks = video.getTracks();
         tracks.forEach(function (track) {
             track.stop();
         });
 
         videoElem.srcObject = null;
-    }
+        }
+    }   
+
+
 
 </script>
 </body>
