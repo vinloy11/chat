@@ -87,14 +87,14 @@
 <template id="liMessage">
     <li></li>
 </template>
-<script src="http://localhost:3000/node_modules/socket.io-client/dist/socket.io.js"></script>
+<script src="http://localhost:3001/node_modules/socket.io-client/dist/socket.io.js"></script>
 <script>
     let video = document.querySelector('#video');
     let img = document.querySelector('img');
     let mainUser = 0;
     let startStreamButton = document.getElementById('start-stream');
     let stopStreamButton = document.getElementById('stop-stream');
-    let socket = io('http://localhost:3000');
+    let socket = io('http://localhost:3001');
     let intervalID ;
     let screenStream = document.getElementById('screen-stream');
     checkState();
