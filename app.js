@@ -1,18 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const app = express();
-const fs = require('fs')
 
-var http = require('http').createServer(app);
+const app = express();
+const fs = require('fs');
+
+const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-app.get('/chat', function (req, res) {
-    res.sendFile(__dirname + '/socket.html');
+
+app.get('/chat', (req, res) => {
+    res.sendFile(`${__dirname}/socket.html`);
 });
-let button = '';
+let button = 'dasa';
 let onlineUsers = 0;
-let mainUser = 0;
-io.on('connection', function (socket) {
+const mainUser = 0;
+io.on('connection', (socket) => {
     onlineUsers++;
     // console.log(onlineUsers)
     console.log('a user connected');
@@ -26,16 +28,16 @@ io.on('connection', function (socket) {
 
     function checkState() {
         if (button === 'disabled') {
-            socket.emit('check state', 'disabled')
+            socket.emit('check state', 'disabled');
         } else {
-            socket.emit('check state', 'not disabled')
+            socket.emit('check state', 'not disabled');
         }
     }
 
     function startStream(video) {
         button = 'disabled';
         if (video !== 'data:,') {
-            socket.broadcast.emit('start stream', video)
+            socket.broadcast.emit('start stream', video);
         } else {
             return true;
         }
@@ -43,13 +45,13 @@ io.on('connection', function (socket) {
 
     function closeWindow(user) {
         if (user === 1) {
-          socket.emit('stop stream')
+            socket.emit('stop stream');
         }
     }
 
     function stopStream() {
         button = '';
-        socket.broadcast.emit('stop stream')
+        socket.broadcast.emit('stop stream');
     }
 
     function disconnect() {
@@ -60,11 +62,11 @@ io.on('connection', function (socket) {
 
     function chat(msg) {
         console.log(msg);
-        io.emit( 'chat message' , msg);
+        io.emit('chat message', msg);
     }
 });
 
-http.listen(3001, function () {
+http.listen(3001, () => {
     console.log('listening on *:3001');
 });
 
@@ -93,12 +95,12 @@ app.use((err, req, res, next) => {
     const {message} = err;
     res.json({status: 'ERROR', message});
 });
-var img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0"
-    + "NAAAAKElEQVQ4jWNgYGD4Twzu6FhFFGYYNXDUwGFpIAk2E4dHDRw1cDgaCAASFOffhEIO"
-    + "3gAAAABJRU5ErkJggg==";
-var data = img.replace(/^data:image\/\w+;base64,/, "");
-fs.writeFile('imag2e.png', data,{encoding:'base64'} , () => {});
-//https://stackoverflow.com/questions/43487543/writing-binary-data-using-node-js-fs-writefile-to-create-an-image-file
+const img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0'
+    + 'NAAAAKElEQVQ4jWNgYGD4Twzu6FhFFGYYNXDUwGFpIAk2E4dHDRw1cDgaCAASFOffhEIO'
+    + '3gAAAABJRU5ErkJggg==';
+const data = img.replace(/^data:image\/\w+;base64,/, '');
+fs.writeFile('imag2e.png', data, {encoding: 'base64'}, () => {});
+// https://stackoverflow.com/questions/43487543/writing-binary-data-using-node-js-fs-writefile-to-create-an-image-file
 
 
 app.listen(8080);
