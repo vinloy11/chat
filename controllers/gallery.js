@@ -2,6 +2,7 @@ const shortid = require('shortid');
 const {validate} = require('jsonschema');
 const multer = require('multer');
 const db = require('../db/db');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination (req, file, cb) {
@@ -9,8 +10,11 @@ const storage = multer.diskStorage({
     },
     filename (req, file, cb) {
         const encodingFile = file.originalname.slice(file.originalname.indexOf('.'));
-        if (encodingFile === '.jpg' || encodingFile === '.png');
-        cb(null, `${file.fieldname}-${Date.now()}${encodingFile}`);
+        if (encodingFile === '.jpg' || encodingFile === '.png') {
+            cb(null, `${file.fieldname}-${Date.now()}${encodingFile}`);
+        } else {
+            return true;
+        }
     },
 });
 const upload = multer({storage});
@@ -40,6 +44,7 @@ const getPhoto = (req, res, next) => {
     res.json({status: 'OK', data: photo});
 };
 
+
 const createPhoto = (req, res, next) => {
     const pathPhoto = `/${req.file.destination}${req.file.filename}`;
     const photo = {
@@ -48,7 +53,7 @@ const createPhoto = (req, res, next) => {
     };
     try {
         db.get('gallery')
-            .push(photo)
+            .unshift(photo)
             .write();
     } catch (error) {
         throw new Error(error);
@@ -57,6 +62,26 @@ const createPhoto = (req, res, next) => {
     res.json({
         status: 'OK',
         data: photo
+    });
+};
+
+const createScreenShot = (req, res, next) => {
+    const {base64} = req.body;
+    const data = base64.replace(/^data:image\/\w+;base64,/, '');
+    const fileName = `${shortid.generate()}.png`;
+    const filePath = 'uploads/';
+    fs.writeFile(filePath + fileName, data, {encoding: 'base64'}, () => {
+        const screenShot = {
+            id: shortid.generate(),
+            path: `/${filePath + fileName}`
+        };
+        try {
+            db.get('gallery')
+                .unshift(screenShot)
+                .write();
+        } catch (error) {
+            throw new Error(error);
+        }
     });
 };
 
@@ -74,4 +99,5 @@ module.exports = {
     getPhoto,
     createPhoto,
     deletePhoto,
+    createScreenShot
 };

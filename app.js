@@ -3,17 +3,20 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-const fs = require('fs');
-
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-
-// app.get('/chat', (req, res) => {
-//     res.sendFile(`${__dirname}/socket.html`);
-// });
 let button = 'dasa';
 let onlineUsers = 0;
 const mainUser = 0;
+
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'accept, content-type, Content-Type, enctype');
+    next();
+});
 io.on('connection', (socket) => {
     onlineUsers++;
     // console.log(onlineUsers)
@@ -79,12 +82,7 @@ const galleryRoutes = require('./routes/gallery');
 
 app.use(bodyParser.json()); // application/json
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
+
 
 app.use('/tasks', tasksRotues);
 app.use(express.static(path.join(__dirname, '/')));
@@ -95,12 +93,6 @@ app.use((err, req, res, next) => {
     const {message} = err;
     res.json({status: 'ERROR', message});
 });
-const img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0'
-    + 'NAAAAKElEQVQ4jWNgYGD4Twzu6FhFFGYYNXDUwGFpIAk2E4dHDRw1cDgaCAASFOffhEIO'
-    + '3gAAAABJRU5ErkJggg==';
-const data = img.replace(/^data:image\/\w+;base64,/, '');
-fs.writeFile('imag2e.png', data, {encoding: 'base64'}, () => {});
-// https://stackoverflow.com/questions/43487543/writing-binary-data-using-node-js-fs-writefile-to-create-an-image-file
 
 
 app.listen(8080);
