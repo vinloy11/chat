@@ -8,9 +8,9 @@ const fs = require('fs');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
-app.get('/chat', (req, res) => {
-    res.sendFile(`${__dirname}/socket.html`);
-});
+// app.get('/chat', (req, res) => {
+//     res.sendFile(`${__dirname}/socket.html`);
+// });
 let button = 'dasa';
 let onlineUsers = 0;
 const mainUser = 0;
