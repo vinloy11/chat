@@ -5,10 +5,9 @@ const path = require('path');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-let button = 'dasa';
+let button = '';
 let onlineUsers = 0;
 const mainUser = 0;
-
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use((req, res, next) => {
@@ -19,7 +18,6 @@ app.use((req, res, next) => {
 });
 io.on('connection', (socket) => {
     onlineUsers++;
-    // console.log(onlineUsers)
     console.log('a user connected');
     socket.broadcast.emit('user connected');
     socket.on('close window', stopStream);
@@ -28,6 +26,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', disconnect);
     socket.on('check state', checkState);
     socket.on('chat message', chat);
+    socket.on('change number', changeAccountNumber);
 
     function checkState() {
         if (button === 'disabled') {
@@ -46,10 +45,8 @@ io.on('connection', (socket) => {
         }
     }
 
-    function closeWindow(user) {
-        if (user === 1) {
-            socket.emit('stop stream');
-        }
+    function changeAccountNumber(number) {
+        socket.broadcast.emit('change number', number);
     }
 
     function stopStream() {
@@ -59,18 +56,14 @@ io.on('connection', (socket) => {
 
     function disconnect() {
         onlineUsers--;
-        console.log(onlineUsers);
-        console.log('user disconnected from your channel');
     }
 
     function chat(msg) {
-        console.log(msg);
         io.emit('chat message', msg);
     }
 });
 
 http.listen(3001, () => {
-    console.log('listening on *:3001');
 });
 
 
@@ -81,8 +74,6 @@ const galleryRoutes = require('./routes/gallery');
 
 
 app.use(bodyParser.json()); // application/json
-
-
 
 app.use('/tasks', tasksRotues);
 app.use(express.static(path.join(__dirname, '/')));
