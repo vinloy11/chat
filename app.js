@@ -8,6 +8,7 @@ const io = require('socket.io')(http);
 let button = '';
 let onlineUsers = 0;
 const mainUser = 0;
+
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use((req, res, next) => {
@@ -18,7 +19,6 @@ app.use((req, res, next) => {
 });
 io.on('connection', (socket) => {
     onlineUsers++;
-    console.log('a user connected');
     socket.broadcast.emit('user connected');
     socket.on('close window', stopStream);
     socket.on('start stream', startStream);
@@ -63,19 +63,11 @@ io.on('connection', (socket) => {
     }
 });
 
-http.listen(3001, () => {
-});
-
-
-const tasksRotues = require('./routes/tasks');
-
+http.listen(3001, () => {});
 
 const galleryRoutes = require('./routes/gallery');
 
-
 app.use(bodyParser.json()); // application/json
-
-app.use('/tasks', tasksRotues);
 app.use(express.static(path.join(__dirname, '/')));
 app.use('/gallery', galleryRoutes);
 
@@ -84,6 +76,5 @@ app.use((err, req, res, next) => {
     const {message} = err;
     res.json({status: 'ERROR', message});
 });
-
 
 app.listen(8080);
